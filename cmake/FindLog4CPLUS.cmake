@@ -10,16 +10,16 @@ IF (LOG4CPLUS_INCLUDE_DIR)
   SET(LOG4CPLUS_FIND_QUIETLY TRUE)
 ENDIF (LOG4CPLUS_INCLUDE_DIR)
 
-FIND_PATH(LOG4CPLUS_INCLUDE_DIR OstreamAppender.hh
-  /usr/local/include/log4cpp
-  /usr/include/log4cpp
+FIND_PATH(LOG4CPLUS_INCLUDE_DIR log4cplus.h
+  /usr/local/include/log4cplus
+  /usr/include/log4cplus
 )
 
-SET(LOG4CPLUS_NAME log4cpp)
+SET(LOG4CPLUS_NAME log4cplus)
 FIND_LIBRARY(LOG4CPLUS_LIBRARY
   NAMES ${LOG4CPLUS_NAME}
   PATHS /usr/lib /usr/local/lib
-  PATH_SUFFIXES log4cpp
+  PATH_SUFFIXES log4cplus
 )
 
 IF (LOG4CPLUS_INCLUDE_DIR AND LOG4CPLUS_LIBRARY)
