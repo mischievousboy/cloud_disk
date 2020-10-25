@@ -7,7 +7,11 @@ cmake_minimum_required (VERSION 3.8)
 project(cloud_disk)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
-# 将源代码添加到此项目的可执行文件。
+
+set(CMAKE_CXX_STANDARD 11)
+
+set(DST_DIR ${CMAKE_SOURCE_DIR}/cgi_bin)
+
 
 file(GLOB_RECURSE DIR_SRCS common/*.cpp common/*.h)
 
@@ -60,4 +64,9 @@ message(STATUS LOG4CPLUS_INCLUDE_DIR=${LOG4CPLUS_INCLUDE_DIR})
 message(STATUS LOG4CPLUS_LIB_DIR=${LOG4CPLUS_LIB_DIR})
 
 #通用头文件路径
-include_directories(./include ./thirdparty MYSQL_INCLUDE_DIR LOG4CPLUS_INCLUDE_DIR)
+include_directories(./common ./thirdparty ${MYSQL_INCLUDE_DIR} ${LOG4CPLUS_INCLUDE_DIR})
+
+#库搜索目录
+link_directories(${MYSQL_LIB_DIR} ${LOG4CPLUS_LIB_DIR})
+
+add_subdirectory(src_cgi)
