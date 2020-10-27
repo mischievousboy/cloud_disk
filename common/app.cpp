@@ -6,9 +6,11 @@
 
 #include "convert.h"
 #include "log/mylog.h"
+#include <x2struct/x2struct.hpp>
 
 int App::Run() {
-  Init();
+  if (!Init())
+    return -1;
   while (FCGI_Accept() >= 0) {
     char *content_length = getenv("CONTENT_LENGTH");
     int len = 0;
@@ -27,7 +29,7 @@ int App::Run() {
       int ret = 0;
       ret = fread(buf, 1, len, stdin); //从标准输入(web服务器)读取内容
       if (ret == 0) {
-        LOGINFO(module_.c_str()) << "fread(buf, 1, len, stdin) err";
+        LOGERROR(module_.c_str()) << "fread(buf, 1, len, stdin) err";
         continue;
       }
       buff_.append(buf);
@@ -35,4 +37,12 @@ int App::Run() {
     }
   }
   return 0;
+}
+
+void App::ReturnStatus(const char* status,const char* msg /*= NULL*/){
+  x2struct::JsonWriter write;
+  write.convert("code",status);
+  if(msg != NULL)
+    write.convert("message",msg);
+  printf(write.toStr().c_str()); 
 }
