@@ -7,7 +7,7 @@ class App {
 public:
   int Run();
   virtual ~App(){};
-
+  void ReturnStatus(const char* status,const char* msg = NULL);
 protected:
   std::string buff_;
   std::string module_;
