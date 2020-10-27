@@ -7,8 +7,8 @@
 
 #define LOGINFO(module)                                                        \
   Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, module, Mylog::Info).ostrem()
-#define LOGIERROR(module)                                                      \
-  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, modele, Mylog::Error).ostrem()
+#define LOGERROR(module)                                                      \
+  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, module, Mylog::Error).ostrem()
 
 #define MAX_LOG_FILE_SIZE (20 * 1024 * 1024)//20M
 #define MAX_LOG_FILE_BACKUP_INDEX 3
