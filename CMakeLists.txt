@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(DST_DIR ${CMAKE_SOURCE_DIR}/cgi_bin)
 
 
-file(GLOB_RECURSE DIR_SRCS common/*.cpp common/*.h)
+file(GLOB_RECURSE DIR_SRCS common/*.cpp common/*.c common/*.h)
 
 message(STATUS *******************************************************)
 message(STATUS CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME})
