@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <iostream>
 
 #include "file_until.h"
+#include "common_def.h"
 
 const std::string syscfg_path ="/conf/cfg.json";
 
@@ -14,8 +16,8 @@ typedef struct{
     ServerAddress redis_addr;
     ServerAddress webserver_addr;
     ServerAddress stroge_server_addr;
-    MysqlCfg mysql_cfg;
-    XTOSTRUCT(M(redis_addr,webserver_addr,stroge_server_addr,mysql_cfg));
+    DataBaseCfg db_cfg;
+    XTOSTRUCT(M(redis_addr,webserver_addr,stroge_server_addr,db_cfg));
 }SystemConfig;
 
 namespace {
@@ -44,16 +46,22 @@ bool DiskSysConfig::Init() {
         break;
       }
     }
+
+    try {
+      x2struct::X::loadjson(path, system_config);
+    } catch (const std::exception &e) {
+      std::cout << "load cfg.json error!";
+    }
+
     
-    x2struct::X::loadjson(path, system_config);
   } while (0);
 
   close(fd);
   return sucess;
 }
 
-const MysqlCfg& DiskSysConfig::GetMysqlCfg(){
-  return system_config.mysql_cfg;
+const DataBaseCfg& DiskSysConfig::GetMysqlCfg(){
+  return system_config.db_cfg;
 }
 
 const ServerAddress& DiskSysConfig::GetRedisAddr(){
