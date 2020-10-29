@@ -14,7 +14,7 @@ bool Login::Parse(const std::string &context) {
     reader.convert("user", user_);
     reader.convert("pwd", pwd_);
   } catch (const std::exception &e) {
-    LOGERRORA << "login request parse error";
+    LOGERROR << "login request parse error";
     return false;
   }
 
@@ -25,7 +25,7 @@ bool Login::Check(){
     std::ostringstream stream;
     stream << "select password from user_info where user_name=" << user_;
     if(!sql::DataBaseManager::GetInstance()->Exec(stream.str())){
-      LOGERRORA << "get user info error:" << sql::DataBaseManager::GetInstance()->GetLastError();
+      LOGERROR << "get user info error:" << sql::DataBaseManager::GetInstance()->GetLastError();
       return false;
     }
 
@@ -55,7 +55,7 @@ std::string Login::CreateToken() {
   std::ostringstream ostream;
   ostream << user_ << rand_num[0] << rand_num[1] << rand_num[2] << rand_num[3];
 
-  LOGINFOA << "token tmp = " << ostream.str();
+  LOGINFO << "token tmp = " << ostream.str();
 
   //加密
   char enc_tmp[1024 * 2];
@@ -63,14 +63,14 @@ std::string Login::CreateToken() {
   int ret = DesEnc((unsigned char *)ostream.str().c_str(), ostream.str().size(),
                    (unsigned char *)enc_tmp, &enc_len);
   if (ret != 0) {
-    LOGERRORA << "DesEnc error";
+    LOGERROR << "DesEnc error";
     return std::string();
   }
 
   // to base64
   char base64[1024 * 3];
   base64_encode((const unsigned char *)enc_tmp, enc_len, base64); // base64编码
-  LOGINFOA << "base64 = " << base64;
+  LOGINFO << "base64 = " << base64;
 
   // to md5
   MD5_CTX md5;

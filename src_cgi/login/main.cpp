@@ -30,9 +30,8 @@ private:
   bool Init() override {
     //初始化日志
     module_ = MODULE_NAME;
-    log_mgr_ = Mylog::LogManager::Create();
+    log_mgr_ = Mylog::CreateLogMgr(MODULE_NAME);
     if (log_mgr_) {
-      log_mgr_->Init(Mylog::GetLogPath(MODULE_NAME), MODULE_NAME);
       log_mgr_->SetLogLevel(Mylog::Info);
     }
 
@@ -50,7 +49,7 @@ private:
     return redis::RedisMgr::GetInstance()->Open(redisAddr.ip,redisAddr.port);
   }
   int RunInternal() override {
-    LOGINFOA << buff_;
+    LOGINFO << buff_;
     int ret =-1;
     do{
       if(!login.Parse(buff_)){
@@ -86,6 +85,5 @@ private:
 
 int main(int argc,char** argv){
     App * app = new LoginApp;
-    app->Run();
-    return 0;
+    return app->Run();
 }

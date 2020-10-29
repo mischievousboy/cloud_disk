@@ -5,8 +5,6 @@
 #include <string>
 
 #define MODULE_NAME "login"
-#define LOGINFOA LOGINFO(MODULE_NAME)
-#define LOGERRORA LOGERROR(MODULE_NAME)
 
 class Login {
 public:
