@@ -20,7 +20,7 @@ int App::Run() {
     if (content_length != NULL)
       len = convert::StringToNumber<int>(content_length);
     else
-      LOGINFO(module_.c_str()) << "len = 0,No data from standard input";
+      LOGINFO << "len = 0,No data from standard input";
 
     if (len <= 0) {
       printf("No data from standard input.<p>\n");
@@ -29,7 +29,7 @@ int App::Run() {
       int ret = 0;
       ret = fread(buf, 1, len, stdin); //从标准输入(web服务器)读取内容
       if (ret == 0) {
-        LOGERROR(module_.c_str()) << "fread(buf, 1, len, stdin) err";
+        LOGERROR << "fread(buf, 1, len, stdin) err";
         continue;
       }
       buff_.append(buf);

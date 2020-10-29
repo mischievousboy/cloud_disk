@@ -17,12 +17,11 @@ LogManager* LogManager::Create(){
 }
 
 
+std::string MyLogMessage::module_name_ = "log";
 
-
-
-MyLogMessage::MyLogMessage(const char *file, int line, const char *func,const char* module_name,
-                           LogLevel level)
-    : file_(file), line_(line), func_(func), level_(level),module_name_(module_name) {}
+MyLogMessage::MyLogMessage(const char* file, int line, const char* func,
+	LogLevel level)
+	: file_(file), line_(line), func_(func), level_(level) {}
 
 MyLogMessage::~MyLogMessage() {
   std::ostringstream head;

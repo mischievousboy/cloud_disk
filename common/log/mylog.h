@@ -5,10 +5,10 @@
 #include <string>
 #include <unistd.h>
 
-#define LOGINFO(module)                                                        \
-  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, module, Mylog::Info).ostrem()
-#define LOGERROR(module)                                                      \
-  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, module, Mylog::Error).ostrem()
+#define LOGINFO                                                        \
+  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, Mylog::Info).ostrem()
+#define LOGERROR                                                      \
+  Mylog::MyLogMessage(__FILE__, __LINE__, __FUNCTION__, Mylog::Error).ostrem()
 
 #define MAX_LOG_FILE_SIZE (20 * 1024 * 1024)//20M
 #define MAX_LOG_FILE_BACKUP_INDEX 3
@@ -65,20 +65,31 @@ public:
 
 class MyLogMessage {
 public:
-  MyLogMessage(const char *file, int line, const char *func,const char* module_name,
+  MyLogMessage(const char *file, int line, const char *func,
                LogLevel level);
   std::ostream &ostrem() { return stream_; };
   ~MyLogMessage();
-
+  static void SetModuleName(const std::string& module) {
+      module_name_ = module;
+  }
 private:
   std::string file_;
   int line_;
   std::string func_;
   std::ostringstream stream_;
   LogLevel level_;
-  std::string module_name_;
+  static std::string module_name_;
 };
 
+
+static LogManager* CreateLogMgr(const std::string& module) {
+	Mylog::MyLogMessage::SetModuleName(module);
+	LogManager* log_mgr = Mylog::LogManager::Create();
+	if (log_mgr) {
+		log_mgr->Init(Mylog::GetLogPath(module), module);
+	}
+	return log_mgr;
+}
 } // namespace log
 
 #endif //_H_MYLOG_H_
