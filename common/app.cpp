@@ -32,6 +32,8 @@ int App::Run() {
         LOGERROR << "fread(buf, 1, len, stdin) err";
         continue;
       }
+      if (!buff_.empty())
+          buff_.clear();
       buff_.append(buf);
       RunInternal();
     }
