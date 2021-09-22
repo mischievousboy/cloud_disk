@@ -29,8 +29,8 @@ public:
   }
 protected:
   DataBaseManager(){};
-  DataBaseManager(const DataBaseManager& other){};
-  DataBaseManager& operator=(const DataBaseManager& other){};
+  DataBaseManager(const DataBaseManager& other) = delete;
+  DataBaseManager& operator=(const DataBaseManager& other) = delete;
   std::string error_str_;
   DataBaseCfg db_cfg_;
 };

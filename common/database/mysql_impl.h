@@ -3,7 +3,7 @@
 
 #include "database.h"
 
-struct st_mysql;
+struct MYSQL;
 
 namespace sql {
 class MysqlImpl : public DataBaseManager {
@@ -14,7 +14,7 @@ public:
   const std::vector<std::string> &GetResults() override;
 
 private:
-  st_mysql *sql_handle_ = nullptr;
+  MYSQL *sql_handle_ = nullptr;
   std::vector<std::string> result_vec_;
   unsigned long result_line_ = 0;
 };

@@ -7,6 +7,7 @@
 #include <base64.h>
 #include <md5.h>
 #include <redis_manager.h>
+#include <ctime>
 
 bool Login::Parse(const std::string &context) {
   try {
@@ -38,7 +39,7 @@ bool Login::Check(){
 
 bool Login::SetToken() {
   std::string token = CreateToken();
-  redis::RedisMgr::GetInstance()->SetKeyValue(user_, token, 86400);
+  return redis::RedisMgr::GetInstance()->SetKeyValue(user_, token, 86400);
 }
 
 std::string Login::CreateToken() {
@@ -47,9 +48,9 @@ std::string Login::CreateToken() {
   int rand_num[4];
 
   //设置随机种子
-  srand((unsigned int)time(NULL));
+  std::srand(std::time(nullptr));
   for (int i = 0; i < 4; ++i) {
-    rand_num[i] = rand() % 1000; //随机数
+    rand_num[i] = std::rand() % 1000; //随机数
   }
 
   std::ostringstream ostream;

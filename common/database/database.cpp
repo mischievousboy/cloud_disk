@@ -19,6 +19,10 @@ DataBaseManager* DataBaseManager::CreateDataBase(DB_Type type){
             db_mgr = new MysqlImpl();
             return db_mgr;
         }
+        default:{
+            db_mgr = new MysqlImpl();
+            return db_mgr;
+        }
     }
 }
 

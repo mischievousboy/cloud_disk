@@ -11,21 +11,22 @@
 class RegisterApp :public App {
 protected:
 	bool Init() override{
-		//³õÊ¼»¯ÈÕÖ¾
+		//åˆå§‹åŒ–æ—¥å¿—
 		module_ = MODULE_NAME;
 		log_mgr_ = Mylog::CreateLogMgr(module_);
 		if (log_mgr_) {
 			log_mgr_->SetLogLevel(Mylog::Info);
 		}
 
-		//¶ÁÈ¡ÅäÖÃÎÄ¼þ
+		//è¯»å–é…ç½®æ–‡ä»¶
 		sysconfig::DiskSysConfig::GetInstance()->Init();
 
-		//³õÊ¼»¯Êý¾Ý¿â
+		//åˆå§‹åŒ–æ•°æ®åº“
 		sql::DataBaseManager::CreateDataBase();
 		sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
 		if (!sql::DataBaseManager::GetInstance()->Open())
 			return false;
+        return true;
 	}
 
 	int RunInternal()override {
@@ -51,6 +52,7 @@ protected:
 		else if (ret == -3) {
 			ReturnStatus("003", "protocol error");
 		}
+        return ret;
 	}
 private:
 	Mylog::LogManager* log_mgr_ = nullptr;

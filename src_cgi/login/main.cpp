@@ -9,9 +9,6 @@
  * 
  */
 
-#include <fcgi_config.h>
-#include <fcgi_stdio.h>
-
 #include <app.h>
 #include <sysconfig.h>
 #include <database/database.h>
@@ -21,7 +18,7 @@
 
 class LoginApp : public App {
 public:
-  ~LoginApp() {
+  ~LoginApp() override {
     if (log_mgr_)
       delete log_mgr_;
   }
@@ -65,7 +62,7 @@ private:
         break;
       }
       ret = 0;
-    }while(0);
+    }while(false);
     
     if(ret == 0){
       ReturnStatus("000",login.GetToken().c_str());

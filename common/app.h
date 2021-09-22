@@ -13,7 +13,7 @@ protected:
   std::string module_;
 
 private:
-  virtual bool Init(){};
+  virtual bool Init(){ return true; };
   virtual int RunInternal() = 0;
 };
 #endif //_H_APP_H_
