@@ -1,0 +1,30 @@
+ARG BUILD_OS=ubuntu
+ARG BUILD_TAG=20.04
+
+FROM ${BUILD_OS}:${BUILD_TAG} AS base
+RUN set -ex;         \
+    apt-get update;  \
+    apt-get install -y liblog4cplus-1.1-9
+
+FROM base AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+
+RUN set -ex;                                                                      \
+    apt-get install -y g++ build-essential autoconf libtool pkg-config openssl libssl-dev git cmake liblog4cplus-dev;                                \
+    mkdir -p /usr/src;                                                            \
+    cd /usr/src;                                                                  \
+    git config --global http.proxy ${HTTP_PROXY};   \
+    git clone -b v1.42.0 --depth=1 https://github.com/grpc/grpc.git;  \
+    cd /usr/src/grpc; git submodule update --init; \
+    mkdir build ; cd build; \
+    cmake \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DgRPC_INSTALL=ON \
+      -DgRPC_BUILD_TESTS=OFF \
+      -DgRPC_SSL_PROVIDER=package \
+      .. ; \
+    make; make install
+
+
