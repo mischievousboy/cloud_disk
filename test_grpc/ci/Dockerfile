@@ -18,7 +18,7 @@ FROM ${BUILD_OS}:${BUILD_TAG} AS base
 #    cmake  .. ; make; make install
 #
 
-FROM build-os:v2.0 AS builder
+FROM build-os:v1 AS builder
 
 WORKDIR /opt/src
 
