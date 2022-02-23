@@ -17,33 +17,36 @@
 
 class LoginApp : public App {
 public:
-    LoginApp(LoginServerImp* service): App(service){}
-  ~LoginApp() override {
-    if (log_mgr_)
-      delete log_mgr_;
-  }
+    LoginApp(LoginServerImp *service) : App(service) {}
 
-private:
-  bool Init() override {
-    //初始化日志
-    module_ = MODULE_NAME;
-    log_mgr_ = Mylog::CreateLogMgr(MODULE_NAME);
-    if (log_mgr_) {
-      log_mgr_->SetLogLevel(Mylog::Info);
+    ~LoginApp() override {
+        if (log_mgr_)
+            delete log_mgr_;
     }
 
-    //读取配置文件
-    sysconfig::DiskSysConfig::GetInstance()->Init();
+private:
+    bool Init() override {
+        //初始化日志
+        module_ = MODULE_NAME;
+        log_mgr_ = Mylog::CreateLogMgr(MODULE_NAME);
+        if (log_mgr_) {
+            log_mgr_->SetLogLevel(Mylog::Info);
+        }
 
-    //初始化数据库
-    sql::DataBaseManager::CreateDataBase();
-    sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
-    if(!sql::DataBaseManager::GetInstance()->Open())
-        return false;
+        //读取配置文件
+        sysconfig::DiskSysConfig::GetInstance()->Init();
 
-    //连接redis
-    const ServerAddress& redisAddr = sysconfig::DiskSysConfig::GetInstance()->GetRedisAddr();
-  }
+        //初始化数据库
+        sql::DataBaseManager::CreateDataBase();
+        sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
+        if (!sql::DataBaseManager::GetInstance()->Open())
+            return false;
+
+        //连接redis
+        const ServerAddress &redisAddr = sysconfig::DiskSysConfig::GetInstance()->GetRedisAddr();
+        return true;
+    }
+
 //  int RunInternal() override {
 //    LOGINFO << buff_;
 //    int ret =-1;
@@ -74,11 +77,11 @@ private:
 //    }
 //    return ret;
 //  }
-  Mylog::LogManager *log_mgr_ = nullptr;
+    Mylog::LogManager *log_mgr_ = nullptr;
 };
 
-int main(int argc,char** argv){
+int main(int argc, char **argv) {
     LoginServerImp login;
-    App * app = new LoginApp(&login);
+    App *app = new LoginApp(&login);
     return app->Run();
 }
