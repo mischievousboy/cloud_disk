@@ -1,0 +1,27 @@
+ARG BUILD_OS=ubuntu
+ARG BUILD_TAG=20.04
+#
+FROM ${BUILD_OS}:${BUILD_TAG} AS base
+
+
+FROM build-os:v5.0 AS builder
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
+WORKDIR /opt/src
+
+COPY .  .
+
+RUN set -ex;   \
+    cd /opt/src; mkdir build; cd build ; cmake ..; make ; cmake --install . --prefix . ; sh ../script/copy_so.sh ./bin
+
+
+
+FROM base AS LoginServer
+ENV LD_LIBRARY_PATH=/app
+COPY --from=builder /opt/src/build/bin/login/* /app/
+ENTRYPOINT ["/app/login"]
+
+FROM base AS RegisterServer
+ENV LD_LIBRARY_PATH=/app
+COPY --from=builder /opt/src/build/bin/register/* /app/
+CMD ["/app/register"]

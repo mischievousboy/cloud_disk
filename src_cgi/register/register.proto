@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.cloudDisk.register";
+option java_outer_classname = "registerProto";
+option objc_class_prefix = "REG";
+
+package cloudDisk.registerServer;
+
+service RegisterService {
+  rpc userRegister (RegisterRequest) returns (RegisterReply) {}
+}
+
+message RegisterRequest {
+    string pwd = 1;
+    string name = 2;
+    string nick_name = 3;
+    string email = 4;
+    string phone = 5;
+}
+
+message RegisterReply {
+  int32 code = 1;
+  string message = 2;
+}

@@ -12,12 +12,12 @@
 #include <app.h>
 #include <sysconfig.h>
 #include <database/database.h>
-#include <redis_manager.h>
 
 #include "login.h"
 
 class LoginApp : public App {
 public:
+    LoginApp(LoginServerImp* service): App(service){}
   ~LoginApp() override {
     if (log_mgr_)
       delete log_mgr_;
@@ -43,44 +43,42 @@ private:
 
     //连接redis
     const ServerAddress& redisAddr = sysconfig::DiskSysConfig::GetInstance()->GetRedisAddr();
-    return redis::RedisMgr::GetInstance()->Open(redisAddr.ip,redisAddr.port);
   }
-  int RunInternal() override {
-    LOGINFO << buff_;
-    int ret =-1;
-    do{
-      if(!login.Parse(buff_)){
-        ret = -2;
-        break;
-      }
-      
-      if(!login.Check())
-        break;
-
-      if(!login.SetToken()){
-        ret = -3;
-        break;
-      }
-      ret = 0;
-    }while(false);
-    
-    if(ret == 0){
-      ReturnStatus("000",login.GetToken().c_str());
-    }else if(ret == -1) {
-      ReturnStatus("001","pwd error");
-    }else if(ret == -2){
-      ReturnStatus("002","protocol error");
-    }else if(ret == -3){
-      ReturnStatus("003","server error");
-    }
-    return ret;
-  }
-
-  Login login;
+//  int RunInternal() override {
+//    LOGINFO << buff_;
+//    int ret =-1;
+//    do{
+//      if(!login.Parse(buff_)){
+//        ret = -2;
+//        break;
+//      }
+//
+//      if(!login.Check())
+//        break;
+//
+//      if(!login.SetToken()){
+//        ret = -3;
+//        break;
+//      }
+//      ret = 0;
+//    }while(false);
+//
+//    if(ret == 0){
+//      ReturnStatus("000",login.GetToken().c_str());
+//    }else if(ret == -1) {
+//      ReturnStatus("001","pwd error");
+//    }else if(ret == -2){
+//      ReturnStatus("002","protocol error");
+//    }else if(ret == -3){
+//      ReturnStatus("003","server error");
+//    }
+//    return ret;
+//  }
   Mylog::LogManager *log_mgr_ = nullptr;
 };
 
 int main(int argc,char** argv){
-    App * app = new LoginApp;
+    LoginServerImp login;
+    App * app = new LoginApp(&login);
     return app->Run();
 }

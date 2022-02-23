@@ -9,6 +9,8 @@
 #define MODULE_NAME "register"
 
 class RegisterApp :public App {
+public:
+    explicit RegisterApp(grpc::Service* service): App(service){}
 protected:
 	bool Init() override{
 		//初始化日志
@@ -19,47 +21,22 @@ protected:
 		}
 
 		//读取配置文件
-		sysconfig::DiskSysConfig::GetInstance()->Init();
+		//sysconfig::DiskSysConfig::GetInstance()->Init();
 
 		//初始化数据库
 		sql::DataBaseManager::CreateDataBase();
 		sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
 		if (!sql::DataBaseManager::GetInstance()->Open())
 			return false;
-        return true;
+        return App::Init();
 	}
 
-	int RunInternal()override {
-		LOGINFO << buff_;
-		int ret = 0;
-		do {
-			if (!reg_.Parse(buff_)) {
-				ret = -3;
-				break;
-			}
-			ret = reg_.StoreDB();
-		} while (0);
-
-		if (ret == 0) {
-			ReturnStatus("000", "OK");
-		}
-		else if (ret == -1) {
-			ReturnStatus("001", "register error");
-		}
-		else if (ret == -2) {
-			ReturnStatus("002", "user exsit");
-		}
-		else if (ret == -3) {
-			ReturnStatus("003", "protocol error");
-		}
-        return ret;
-	}
 private:
 	Mylog::LogManager* log_mgr_ = nullptr;
-	reg::MyRegister reg_;
 };
 
 int main() {
-	App* app = new RegisterApp;
+    reg::RegisterImpl reg;
+	App* app = new RegisterApp(&reg);
 	return app->Run();
 }

@@ -12,8 +12,9 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(DST_DIR ${CMAKE_SOURCE_DIR}/cgi_bin)
 
-
 file(GLOB_RECURSE DIR_SRCS common/*.cpp common/*.c common/*.h)
+
+include(cmake/common.cmake)
 
 message(STATUS *******************************************************)
 message(STATUS CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME})
@@ -63,10 +64,18 @@ message(STATUS LOG4CPLUS_LIBRARY=${LOG4CPLUS_LIBRARY})
 message(STATUS LOG4CPLUS_INCLUDE_DIR=${LOG4CPLUS_INCLUDE_DIR})
 message(STATUS LOG4CPLUS_LIB_DIR=${LOG4CPLUS_LIB_DIR})
 
+#检查redis-plus-plus
+find_path(REDIS_PLUS_PLUS_HEADER sw)
+find_library(REDIS_PLUS_PLUS_LIB redis++)
+message(REDIS_PLUS_PLUS_HEADER=${REDIS_PLUS_PLUS_HEADER})
+message(REDIS_PLUS_PLUS_LIB=${REDIS_PLUS_PLUS_LIB})
 #通用头文件路径
 include_directories(./common ./thirdparty ${MYSQL_INCLUDE_DIR} ${LOG4CPLUS_INCLUDE_DIR})
 
 #库搜索目录
 link_directories(${MYSQL_LIB_DIR} ${LOG4CPLUS_LIB_DIR})
 
+string(JOIN " " SRC_DIRS common common/)
+set(LIBCOMMON common)
 add_subdirectory(src_cgi)
+add_subdirectory(common)

@@ -1,0 +1,24 @@
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.cloudDisk.loginServer";
+option java_outer_classname = "loginServerProto";
+option objc_class_prefix = "LGN";
+
+package cloudDisk;
+
+service loginServer {
+  rpc userLogin (LoginRequest) returns (LoginReply) {}
+}
+
+message LoginRequest {
+  string userName = 1;
+  string pwd = 2;
+}
+
+message LoginReply {
+  int32 code = 1;
+  string message = 2;
+  string token = 3;
+}

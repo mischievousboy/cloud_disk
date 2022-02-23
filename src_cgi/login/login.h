@@ -3,12 +3,12 @@
 
 #include <log/mylog.h>
 #include <string>
+#include "login.grpc.pb.h"
 
 #define MODULE_NAME "login"
 
-class Login {
+class LoginServerImp final : public cloudDisk::loginServer::Service  {
 public:
-  bool Parse(const std::string &context);
   bool Check();
   bool SetToken();
   const std::string& GetToken();

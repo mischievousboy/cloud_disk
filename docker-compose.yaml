@@ -1,0 +1,48 @@
+version: "3.7"
+services:
+
+  mysql-db:
+    container_name: mysql-db
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    networks:
+      - cloud-disk
+
+  front_envoy:
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-frontenvoy
+    depends_on:
+      - "mysql-db"
+    networks:
+      - cloud-disk
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "8001:8001"
+
+
+  register-server:
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-app
+      target: RegisterServer
+    depends_on:
+      - "front_envoy"
+    networks:
+      - cloud-disk
+
+  login-server:
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-app
+      target: LoginServer
+    depends_on:
+      - "front_envoy"
+    networks:
+      - cloud-disk
+networks:
+  cloud-disk: {}

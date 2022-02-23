@@ -6,23 +6,9 @@
 #include <des.h>
 #include <base64.h>
 #include <md5.h>
-#include <redis_manager.h>
 #include <ctime>
 
-bool Login::Parse(const std::string &context) {
-  try {
-    x2struct::JsonReader reader(context);
-    reader.convert("user", user_);
-    reader.convert("pwd", pwd_);
-  } catch (const std::exception &e) {
-    LOGERROR << "login request parse error";
-    return false;
-  }
-
-  return true;
-}
-
-bool Login::Check(){
+bool LoginServerImp::Check(){
     std::ostringstream stream;
     stream << "select password from user_info where user_name=" << user_;
     if(!sql::DataBaseManager::GetInstance()->Exec(stream.str())){
@@ -37,12 +23,12 @@ bool Login::Check(){
     return false;
 }
 
-bool Login::SetToken() {
+bool LoginServerImp::SetToken() {
   std::string token = CreateToken();
-  return redis::RedisMgr::GetInstance()->SetKeyValue(user_, token, 86400);
+  return true;
 }
 
-std::string Login::CreateToken() {
+std::string LoginServerImp::CreateToken() {
 
   //产生4个1000以内的随机数
   int rand_num[4];
@@ -88,4 +74,4 @@ std::string Login::CreateToken() {
   return token_;
 }
 
-const std::string &Login::GetToken() { return token_; }
+const std::string &LoginServerImp::GetToken() { return token_; }
