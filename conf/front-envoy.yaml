@@ -21,7 +21,7 @@ static_resources:
             - name: local_service
               domains: ["*"]
               routes:
-              - match: { prefix: "/cloudDisk/registerServer" }
+              - match: { prefix: "/cloudDisk.registerServer" }
                 route: { cluster: registerService }
           http_filters:
           - name: envoy.filters.http.router
