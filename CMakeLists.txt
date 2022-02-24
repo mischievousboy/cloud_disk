@@ -3,7 +3,7 @@
 # 项目特定的逻辑。
 #
 cmake_minimum_required (VERSION 3.13)
-
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 project(cloud_disk)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
