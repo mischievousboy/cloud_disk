@@ -77,5 +77,5 @@ link_directories(${MYSQL_LIB_DIR} ${LOG4CPLUS_LIB_DIR})
 
 string(JOIN " " SRC_DIRS common common/)
 set(LIBCOMMON common)
-add_subdirectory(src_cgi)
+add_subdirectory(src)
 add_subdirectory(common)
