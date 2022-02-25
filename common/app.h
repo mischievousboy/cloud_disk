@@ -1,36 +1,52 @@
 #ifndef _H_APP_H_
 #define _H_APP_H_
 
+#include <memory>
 #include <string>
-#include <grpcpp/grpcpp.h>
 
-//class App {
-//public:
-//  int Run();
-//  virtual ~App(){};
-//  void ReturnStatus(const char* status,const char* msg = NULL);
-//protected:
-//  std::string buff_;
-//  std::string module_;
-//
-//private:
-//  virtual bool Init(){ return true; };
-//  virtual int RunInternal() = 0;
-//};
-//#endif //_H_APP_H_
+class Option;
+
+struct ServerConfig {
+    std::string host;
+    std::string port;
+};
+
+namespace x2struct {
+    class JsonReader;
+}
+namespace grpc {
+    class Server;
+    class Service;
+}// namespace grpc
+
+
+using ServicePtr = std::shared_ptr<grpc::Service>;
+
 
 class App {
 public:
-    App(grpc::Service* service);
+    App();
+    virtual ~App() = default;
+    void Main(int argc, char *argv[]);
     int Run();
-    virtual bool Init();
-    virtual ~App()= default;
+    virtual bool Init() = 0;
+
+    template<class T>
+    void AddService(const std::string &id) {
+        service_ = std::make_pair(id, std::make_shared<T>());
+    }
 
 protected:
-    std::unique_ptr<grpc::Server> server_;
-    grpc::Service* service_;
+    void Main(const Option &opt);
+    void ParseConfig(const std::string &configPath);
+    void InitServer();
+
     std::string module_;
+    std::unique_ptr<x2struct::JsonReader> json_reader_;
+    //ServicePtr service_;
+    std::pair<std::string,ServicePtr> service_;
+    std::shared_ptr<grpc::Server> server_;
 };
 
 
-#endif //_H_APP_H_
+#endif//_H_APP_H_

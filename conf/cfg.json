@@ -1,23 +1,6 @@
 {
-	"redis_addr": {
-		"ip": "127.0.0.1",
-		"port": 6379
-	},
-	"webserver_addr": {
-		"ip": "127.0.0.1",
-		"port": -1
-	},
-	"stroge_server_addr": {
-		"ip": "127.0.0.1",
-		"port": -1
-	},
-	"db_cfg": {
-		"database": "cloud_disk",
-		"user": "user",
-		"password": "passwd",
-		"address": {
-			"ip": "127.0.0.1",
-			"port": 3306
-		}
+	"server": {
+		"ip": "0.0.0.0",
+		"port": "50051"
 	}
 }
