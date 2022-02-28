@@ -42,14 +42,8 @@ namespace sql {
         }
     }
 
-    void DataBaseManager::Init(const DataBaseCfg &db_cfg) {
-        //db_cfg_ = db_cfg;
-        //TODO:读取文件配置待完成
-        db_cfg_.address.ip = "mysql-db";
-        db_cfg_.address.port = 3306;
-        db_cfg_.database = "cloud_disk";
-        db_cfg_.user = "root";
-        db_cfg_.password = "123456";
+    void DataBaseManager::Init(x2struct::JsonReader &reader) {
+        db_conf_.LoadFromJson(reader);
     }
 
 }

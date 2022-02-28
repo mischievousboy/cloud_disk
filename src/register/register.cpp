@@ -1,11 +1,11 @@
 #include "register.h"
 
+#include <database/database.h>
 #include <iostream>
 #include <log/mylog.h>
-#include <database/database.h>
 
-#define  MARKB "'"
-#define  MARKE "' "
+#define MARKB "'"
+#define MARKE "' "
 
 #define CREATITEM(value) MARKB << value.c_str() << MARKE
 
@@ -17,21 +17,19 @@ namespace reg {
         sql::DataBaseManager *db = sql::DataBaseManager::GetInstance();
         std::ostringstream ostream;
         ostream << "select* from user_info where user_name = " << CREATITEM(request->name());
-        if (db->Exec(ostream.str())) {
-            std::vector<std::string> res = db->GetResults();
-            if (res.size() != 0) {
-                return std::make_pair(-2, "user exist"); //用户已存在
-            }
-            ostream.clear();
-            ostream.str("");
-            ostream << "insert into user_info ( user_name, nick_name, password, phone, email ) values ("
-                    <<  CREATITEM(request->name()) << "," << CREATITEM(request->nick_name()) << "," << CREATITEM(request->pwd()) << ","
-                    << CREATITEM(request->phone()) << "," << CREATITEM(request->email()) << ");";
-            if (!db->Exec(ostream.str()))
-                return std::make_pair(-1, "sql error");
-        }
+        if (db->Query(ostream.str()).size() != 0)
+            return std::make_pair(-2, "user exist");//用户已存在
 
-        return std::make_pair(0,"OK");
+        ostream.clear();
+        ostream.str("");
+        ostream << "insert into user_info ( user_name, nick_name, password, phone, email ) values ("
+                << CREATITEM(request->name()) << "," << CREATITEM(request->nick_name()) << "," << CREATITEM(request->pwd()) << ","
+                << CREATITEM(request->phone()) << "," << CREATITEM(request->email()) << ");";
+        if (!db->Exec(ostream.str()))
+            return std::make_pair(-1, "sql error");
+
+
+        return std::make_pair(0, "OK");
     }
 
     ::grpc::Status
@@ -42,4 +40,4 @@ namespace reg {
         response->set_message(ret.second);
         return Status::OK;
     }
-}
+}// namespace reg

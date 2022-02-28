@@ -19,9 +19,11 @@ RUN set -ex;   \
 FROM base AS LoginServer
 ENV LD_LIBRARY_PATH=/app
 COPY --from=builder /opt/src/build/bin/login/* /app/
-ENTRYPOINT ["/app/login"]
+COPY ./conf/login.json /app/
+CMD ["/app/login","--config=/app/login.json"]
 
 FROM base AS RegisterServer
 ENV LD_LIBRARY_PATH=/app
 COPY --from=builder /opt/src/build/bin/register/* /app/
-CMD ["/app/register"]
+COPY ./conf/register.json /app/
+CMD ["/app/register", "--config=/app/register.json"]

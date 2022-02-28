@@ -1,0 +1,14 @@
+{
+	"server": {
+		"ip": "0.0.0.0",
+		"port": "50052"
+	},
+	"mysql": {
+		"host": "mysql-db",
+		"user": "root",
+		"passwd": "123456",
+		"database": "cloud_disk",
+		"charset": "utf8",
+		"port": 3306
+	}
+}

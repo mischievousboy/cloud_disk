@@ -31,7 +31,10 @@ void App::Main(const Option &opt) {
     }
 
     ParseConfig(config);
-    Init();
+    if(!Init()){
+        std::cerr << "server Init error";
+        exit(1);
+    }
     InitServer();
 }
 void App::InitServer() {

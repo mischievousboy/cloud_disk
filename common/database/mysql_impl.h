@@ -6,18 +6,16 @@
 struct MYSQL;
 
 namespace sql {
-class MysqlImpl : public DataBaseManager {
-public:
-  bool Open() override;
-  void Close() override;
-  bool Exec(const std::string &sqlCmd) override;
-  const std::vector<std::string> &GetResults() override;
+    class MysqlImpl : public DataBaseManager {
+    public:
+        bool Open() override;
+        void Close() override;
+        bool Exec(const std::string &sqlCmd) override;
+        SqlRecord Query(const std::string &sqlCmd) override;
 
-private:
-  MYSQL *sql_handle_ = nullptr;
-  std::vector<std::string> result_vec_;
-  unsigned long result_line_ = 0;
-};
-} // namespace sql
+    private:
+        MYSQL *sql_handle_ = nullptr;
+    };
+}// namespace sql
 
-#endif //_H_MYSQL_IMPL_H_
+#endif//_H_MYSQL_IMPL_H_

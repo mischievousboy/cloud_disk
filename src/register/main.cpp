@@ -26,11 +26,10 @@ protected:
         AddService<reg::RegisterImpl>("register");
 
         //初始化数据库
-        //sql::DataBaseManager::CreateDataBase();
-        //sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
-        //if (!sql::DataBaseManager::GetInstance()->Open())
-        //    return false;
-        return true;
+        sql::DataBaseManager::CreateDataBase();
+        x2struct::JsonReader reader = json_reader_->operator[]("mysql");
+        sql::DataBaseManager::GetInstance()->Init(reader);
+        return sql::DataBaseManager::GetInstance()->Open();
     }
 
 private:

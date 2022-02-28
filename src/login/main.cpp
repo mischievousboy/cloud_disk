@@ -10,14 +10,14 @@
  */
 
 #include <app.h>
-#include <sysconfig.h>
 #include <database/database.h>
+#include <sysconfig.h>
 
 #include "login.h"
 
 class LoginApp : public App {
 public:
-    LoginApp(LoginServerImp *service) : App(service) {}
+    LoginApp() : App() {}
 
     ~LoginApp() override {
         if (log_mgr_)
@@ -33,12 +33,15 @@ private:
             log_mgr_->SetLogLevel(Mylog::Info);
         }
 
+        AddService<LoginServerImp>("login");
+
         //读取配置文件
         sysconfig::DiskSysConfig::GetInstance()->Init();
 
         //初始化数据库
         sql::DataBaseManager::CreateDataBase();
-        sql::DataBaseManager::GetInstance()->Init(sysconfig::DiskSysConfig::GetInstance()->GetMysqlCfg());
+        x2struct::JsonReader reader = json_reader_->operator[]("mysql");
+        sql::DataBaseManager::GetInstance()->Init(reader);
         if (!sql::DataBaseManager::GetInstance()->Open())
             return false;
 
@@ -47,41 +50,49 @@ private:
         return true;
     }
 
-//  int RunInternal() override {
-//    LOGINFO << buff_;
-//    int ret =-1;
-//    do{
-//      if(!login.Parse(buff_)){
-//        ret = -2;
-//        break;
-//      }
-//
-//      if(!login.Check())
-//        break;
-//
-//      if(!login.SetToken()){
-//        ret = -3;
-//        break;
-//      }
-//      ret = 0;
-//    }while(false);
-//
-//    if(ret == 0){
-//      ReturnStatus("000",login.GetToken().c_str());
-//    }else if(ret == -1) {
-//      ReturnStatus("001","pwd error");
-//    }else if(ret == -2){
-//      ReturnStatus("002","protocol error");
-//    }else if(ret == -3){
-//      ReturnStatus("003","server error");
-//    }
-//    return ret;
-//  }
+    //  int RunInternal() override {
+    //    LOGINFO << buff_;
+    //    int ret =-1;
+    //    do{
+    //      if(!login.Parse(buff_)){
+    //        ret = -2;
+    //        break;
+    //      }
+    //
+    //      if(!login.Check())
+    //        break;
+    //
+    //      if(!login.SetToken()){
+    //        ret = -3;
+    //        break;
+    //      }
+    //      ret = 0;
+    //    }while(false);
+    //
+    //    if(ret == 0){
+    //      ReturnStatus("000",login.GetToken().c_str());
+    //    }else if(ret == -1) {
+    //      ReturnStatus("001","pwd error");
+    //    }else if(ret == -2){
+    //      ReturnStatus("002","protocol error");
+    //    }else if(ret == -3){
+    //      ReturnStatus("003","server error");
+    //    }
+    //    return ret;
+    //  }
     Mylog::LogManager *log_mgr_ = nullptr;
 };
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "misc-throw-by-value-catch-by-reference"
 int main(int argc, char **argv) {
-    LoginServerImp login;
-    App *app = new LoginApp(&login);
-    return app->Run();
+    try {
+        LoginApp app;
+        app.Main(argc, argv);
+        return app.Run();
+    } catch (std::exception e) {
+        std::cout << e.what() << std::endl;
+        return -1;
+    }
 }
+#pragma clang diagnostic pop
