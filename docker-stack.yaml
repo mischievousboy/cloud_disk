@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   mysql-db:
-    image: cloud_disk_mysql-db:latest
+    image: cloud-disk-mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db-root-passwd
       MYSQL_PASSWORD_FILE: /run/secrets/db-root-passwd
@@ -13,7 +13,7 @@ services:
       - db-root-passwd
 
   front-envoy:
-    image: cloud_disk_front_envoy:latest
+    image: cloud-disk-envoy:latest
     depends_on:
       - "mysql-db"
     networks:
@@ -25,14 +25,14 @@ services:
 
 
   register-server:
-    image: cloud_disk_register-server:latest
+    image: cloud-disk-register:latest
     depends_on:
       - "front_envoy"
     networks:
       - cloud-disk
 
   login-server:
-    image: cloud_disk_login-server:latest
+    image: cloud-disk-login:latest
     depends_on:
       - "front_envoy"
     networks:
