@@ -58,7 +58,7 @@ namespace sql {
         virtual ~DataBaseManager();
         void Init(x2struct::JsonReader &reader);
         virtual bool Open() = 0;
-        virtual void Close(){};
+        virtual void Close() = 0;
         /*!
          * 执行sql语句不查看返回结果集
          * @param sqlCmd

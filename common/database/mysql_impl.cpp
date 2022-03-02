@@ -18,6 +18,7 @@ namespace sql {
     }// namespace
 
     bool MysqlImpl::Open() {
+        Close();
         sql_handle_ = mysql_init(nullptr);
         if (sql_handle_ == nullptr) {
             std::cerr << "mysql init error" << std::endl;
@@ -42,13 +43,21 @@ namespace sql {
     }
 
     void MysqlImpl::Close() {
-        mysql_close(sql_handle_);
+        if (sql_handle_ != nullptr)
+            mysql_close(sql_handle_);
     }
 
     bool MysqlImpl::Exec(const std::string &sqlCmd) {
         bool ret = false;
         MYSQL_RES *result = nullptr;
         ret = (mysql_real_query(sql_handle_, sqlCmd.c_str(), sqlCmd.length()) == 0);
+        if (!ret) {
+            int error = mysql_errno(sql_handle_);
+            if (error == 2013 || error == 2006) {
+                Open();
+                ret = (mysql_real_query(sql_handle_, sqlCmd.c_str(), sqlCmd.length()) == 0);
+            }
+        }
         if (!ret)
             PrintfMysqlError(sql_handle_, "mysql_query error:", error_str_);
         return ret;
