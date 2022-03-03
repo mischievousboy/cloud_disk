@@ -11,6 +11,16 @@ services:
       MYSQL_ROOT_PASSWORD: 123456
     networks:
       - cloud-disk
+    ports:
+      - "3306:3306"
+
+  redis-db:
+    container_name: cloud-disk-redis
+    image: redis:6.0
+    networks:
+      - cloud-disk
+    ports:
+      - "6379:6379"
 
   front-envoy:
     container_name: cloud-disk-front-envoy

@@ -4,10 +4,6 @@
 #include <iostream>
 #include <log/mylog.h>
 
-#define MARKB "'"
-#define MARKE "' "
-
-#define CREATITEM(value) MARKB << value.c_str() << MARKE
 
 using namespace ::grpc;
 

@@ -5,6 +5,10 @@
 
 #include "../common_def.h"
 
+#define MARKB "'"
+#define MARKE "' "
+#define CREATITEM(value) MARKB << value.c_str() << MARKE
+
 namespace sql {
 
     typedef enum {
@@ -54,6 +58,8 @@ namespace sql {
     public:
         static DataBaseManager *CreateDataBase(DB_Type type = DB_DEFAULT_TYPE);
         static DataBaseManager *GetInstance();
+        DataBaseManager(const DataBaseManager &other) = delete;
+        DataBaseManager &operator=(const DataBaseManager &other) = delete;
         static void Release();
         virtual ~DataBaseManager();
         void Init(x2struct::JsonReader &reader);
@@ -81,10 +87,6 @@ namespace sql {
 
     protected:
         DataBaseManager() = default;
-        ;
-        DataBaseManager(const DataBaseManager &other) = delete;
-        DataBaseManager &operator=(const DataBaseManager &other) = delete;
-
         std::string error_str_;
         DBConf db_conf_;
     };

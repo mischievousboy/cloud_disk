@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(DST_DIR ${CMAKE_SOURCE_DIR}/cgi_bin)
+set(DST_DIR ${CMAKE_SOURCE_DIR}/bin)
 
 file(GLOB_RECURSE DIR_SRCS common/*.cpp common/*.c common/*.h)
 
@@ -67,6 +67,8 @@ message(STATUS LOG4CPLUS_LIB_DIR=${LOG4CPLUS_LIB_DIR})
 #检查redis-plus-plus
 find_path(REDIS_PLUS_PLUS_HEADER sw)
 find_library(REDIS_PLUS_PLUS_LIB redis++)
+find_path(HIREDIS_HEADER hiredis)
+find_library(HIREDIS_LIB hiredis)
 message(REDIS_PLUS_PLUS_HEADER=${REDIS_PLUS_PLUS_HEADER})
 message(REDIS_PLUS_PLUS_LIB=${REDIS_PLUS_PLUS_LIB})
 #通用头文件路径

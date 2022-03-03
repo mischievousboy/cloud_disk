@@ -8,6 +8,7 @@ struct MYSQL;
 namespace sql {
     class MysqlImpl : public DataBaseManager {
     public:
+        ~MysqlImpl() override;
         bool Open() override;
         void Close() override;
         bool Exec(const std::string &sqlCmd) override;

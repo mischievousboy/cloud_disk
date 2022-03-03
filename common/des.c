@@ -696,7 +696,7 @@ void  CW_dataPadAdd(int tag, unsigned char *date, unsigned int dateLen,
 	*padDate = pTmp;
 }
 
-#define  USER_PASSWORD_KEY "abcd1234"
+#define  USER_PASSWORD_KEY "cloud233"
 
 
 //数据加密

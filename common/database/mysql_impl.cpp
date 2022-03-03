@@ -103,4 +103,7 @@ namespace sql {
             mysql_free_result(result);
         return data;
     }
+    MysqlImpl::~MysqlImpl() {
+        MysqlImpl::Close();
+    }
 }// namespace sql

@@ -23,6 +23,8 @@ static_resources:
               routes:
               - match: { prefix: "/cloudDisk.registerServer" }
                 route: { cluster: registerService }
+              - match: { prefix: "/cloudDisk.loginServer"}
+                route: { cluster: loginService }
           http_filters:
           - name: envoy.filters.http.router
 
@@ -45,3 +47,22 @@ static_resources:
               socket_address:
                 address: register-server
                 port_value: 50051
+
+  - name: loginService
+    connect_timeout: 1.25s
+    type: logical_dns
+    lb_policy: round_robin
+    dns_lookup_family: V4_ONLY
+    http2_protocol_options: {}
+    upstream_connection_options:
+      tcp_keepalive:
+        keepalive_time: 300
+    load_assignment:
+      cluster_name: loginService
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: login-server
+                    port_value: 50051

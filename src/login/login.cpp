@@ -2,15 +2,17 @@
 
 #include <x2struct/x2struct.hpp>
 
+#include "redis_manager.h"
+#include "sw/redis++/redis++.h"
 #include <base64.h>
 #include <ctime>
 #include <database/database.h>
 #include <des.h>
 #include <md5.h>
 
-bool LoginServerImp::Check() {
+bool LoginServerImp::Check(const std::string &user, const std::string &pwd) {
     std::ostringstream stream;
-    stream << "select password from user_info where user_name=" << user_;
+    stream << "select password from user_info where user_name=" << CREATITEM(user);
     sql::SqlRecord record = sql::DataBaseManager::GetInstance()->Query(stream.str());
     if (record.empty()) {
         LOGERROR << "get user info error:" << sql::DataBaseManager::GetInstance()->GetLastError();
@@ -18,17 +20,22 @@ bool LoginServerImp::Check() {
     }
 
     if (record.size() == 1) {
-        return record.front()["passwd"] == pwd_;
+        if (record.front()["password"] == pwd)
+            return true;
+        else
+            LOGERROR << "user:" << user << " pwd not match";
     }
     return false;
 }
 
-bool LoginServerImp::SetToken() {
-    std::string token = CreateToken();
-    return true;
+bool LoginServerImp::SetToken(const std::string &user, const std::string &token) {
+    std::shared_ptr<sw::redis::Redis> redis = RedisManager::GetInstance()->GetRedisImpl();
+    if (!redis)
+        return false;
+    return redis->set(user, token);
 }
 
-std::string LoginServerImp::CreateToken() {
+std::string LoginServerImp::CreateToken(const std::string &user) {
 
     //产生4个1000以内的随机数
     int rand_num[4];
@@ -40,7 +47,7 @@ std::string LoginServerImp::CreateToken() {
     }
 
     std::ostringstream ostream;
-    ostream << user_ << rand_num[0] << rand_num[1] << rand_num[2] << rand_num[3];
+    ostream << user << rand_num[0] << rand_num[1] << rand_num[2] << rand_num[3];
 
     LOGINFO << "token tmp = " << ostream.str();
 
@@ -50,8 +57,9 @@ std::string LoginServerImp::CreateToken() {
     int ret = DesEnc((unsigned char *) ostream.str().c_str(), ostream.str().size(),
                      (unsigned char *) enc_tmp, &enc_len);
     if (ret != 0) {
-        LOGERROR << "DesEnc error";
-        return std::string();
+        LOGERROR << "DesEnc error"
+                 << " user:" << user;
+        return {};
     }
 
     // to base64
@@ -67,11 +75,40 @@ std::string LoginServerImp::CreateToken() {
     MD5Final(&md5, decrypt);
 
     char str[100] = {0};
-    for (int i = 0; i < 16; i++) {
-        sprintf(str, "%02x", decrypt[i]);
+    for (size_t i = 0; i < 16; i++) {
+        sprintf(str + i, "%02x", decrypt[i]);
     }
-    token_ = std::string(str);
-    return token_;
+    return str;
 }
 
-const std::string &LoginServerImp::GetToken() { return token_; }
+::grpc::Status LoginServerImp::userLogin(::grpc::ServerContext *context, const ::cloudDisk::loginServer::LoginRequest *request, ::cloudDisk::loginServer::LoginReply *response) {
+    do {
+        //        if (ret != 0) {
+        //            LOGERROR << "pwd DesEnc error";
+        //            response->set_code(-1);
+        //            response->set_message("pwd DesEnc error");
+        //            break;
+        //        }
+
+        if (!Check(request->username(), request->pwd())) {
+            response->set_code(100);
+            response->set_message("account pwd not match");
+            break;
+        }
+        std::string token = CreateToken(request->username());
+        if (token.empty()) {
+            response->set_code(-2);
+            response->set_message("server error: createToken error");
+            break;
+        }
+        if (SetToken(request->username(), token)) {
+            response->set_code(0);
+            response->set_message("ok");
+            response->set_token(token);
+        } else {
+            response->set_code(-3);
+            response->set_message("token store server error");
+        }
+    } while (false);
+    return grpc::Status::OK;
+}

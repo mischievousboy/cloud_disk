@@ -8,9 +8,7 @@ namespace sql {
         static DataBaseManager *db_mgr = nullptr;
     }
 
-    DataBaseManager::~DataBaseManager() {
-        Close();
-    }
+    DataBaseManager::~DataBaseManager() = default;
 
     DataBaseManager *DataBaseManager::CreateDataBase(DB_Type type) {
         if (db_mgr != nullptr)

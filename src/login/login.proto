@@ -2,13 +2,13 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "io.grpc.cloudDisk.loginServer";
+option java_package = "io.grpc.cloudDisk.login";
 option java_outer_classname = "loginServerProto";
 option objc_class_prefix = "LGN";
 
-package cloudDisk;
+package cloudDisk.loginServer;
 
-service loginServer {
+service LoginService {
   rpc userLogin (LoginRequest) returns (LoginReply) {}
 }
 
