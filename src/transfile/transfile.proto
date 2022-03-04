@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.cloudDisk.transfile";
+option java_outer_classname = "transfilesProto";
+option objc_class_prefix = "TRF";
+
+package cloudDisk.fileServer;
+
+service TransFileService{
+  rpc Upload(stream UploadReq) returns (UploadRsp){}
+}
+
+message MetaData{
+  string name = 1;
+  string type = 2;
+}
+
+message FileContext{
+  bytes buffer = 1;
+}
+
+message UploadReq{
+  oneof request{
+    MetaData metadata = 1;
+    FileContext file = 2;
+  }
+}
+
+message UploadRsp{
+  int32 code = 1;
+  string message = 2;
+}
