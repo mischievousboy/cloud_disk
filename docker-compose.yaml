@@ -13,6 +13,8 @@ services:
       - cloud-disk
     ports:
       - "3306:3306"
+    volumes:
+      - /data/mysql/data:/var/lib/mysql
 
   redis-db:
     container_name: cloud-disk-redis
@@ -21,6 +23,8 @@ services:
       - cloud-disk
     ports:
       - "6379:6379"
+    volumes:
+      - /data/redis/data:/data
 
   front-envoy:
     container_name: cloud-disk-front-envoy
