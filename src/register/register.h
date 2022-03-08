@@ -11,7 +11,7 @@ class RegisterImpl : public cloudDisk::registerServer::RegisterService::Service 
         std::pair<int,std::string> StoreDB(const ::cloudDisk::registerServer::RegisterRequest* request);
 
     private:
-        //::cloudDisk::RegisterRequest user_info_;
+        std::string GetUid();
     };
 }
 

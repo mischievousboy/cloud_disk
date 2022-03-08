@@ -7,7 +7,9 @@
 
 #define MARKB "'"
 #define MARKE "' "
+#define MARKEP "',"
 #define CREATITEM(value) MARKB << value.c_str() << MARKE
+#define CREATITEMP(value) MARKB << value.c_str() << MARKEP
 
 namespace sql {
 
