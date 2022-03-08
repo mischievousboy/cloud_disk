@@ -10,9 +10,13 @@
 #include <des.h>
 #include <md5.h>
 
-bool LoginServerImp::Check(const std::string &user, const std::string &pwd) {
+namespace {
+    const std::string TOKENKEY = "HT_";
+}
+
+bool LoginServerImp::Check(const std::string &user, const std::string &pwd, std::string &uid) {
     std::ostringstream stream;
-    stream << "select password from user_info where user_name=" << CREATITEM(user);
+    stream << "select password,uid from user_info where user_name=" << CREATITEM(user);
     sql::SqlRecord record = sql::DataBaseManager::GetInstance()->Query(stream.str());
     if (record.empty()) {
         LOGERROR << "get user info error:" << sql::DataBaseManager::GetInstance()->GetLastError();
@@ -20,9 +24,10 @@ bool LoginServerImp::Check(const std::string &user, const std::string &pwd) {
     }
 
     if (record.size() == 1) {
-        if (record.front()["password"] == pwd)
+        if (record.front()["password"] == pwd) {
+            uid = record.front()["uid"];
             return true;
-        else
+        } else
             LOGERROR << "user:" << user << " pwd not match";
     }
     return false;
@@ -32,7 +37,12 @@ bool LoginServerImp::SetToken(const std::string &user, const std::string &token)
     std::shared_ptr<sw::redis::Redis> redis = RedisManager::GetInstance()->GetRedisImpl();
     if (!redis)
         return false;
-    return redis->set(user, token);
+    try{
+         return redis->set(TOKENKEY + user, token);
+    } catch (const sw::redis::Error& error){
+        LOGERROR << "redis error:"  << error.what();
+        return false;
+    }
 }
 
 std::string LoginServerImp::CreateToken(const std::string &user) {
@@ -89,22 +99,23 @@ std::string LoginServerImp::CreateToken(const std::string &user) {
         //            response->set_message("pwd DesEnc error");
         //            break;
         //        }
-
-        if (!Check(request->username(), request->pwd())) {
+        std::string uid;
+        if (!Check(request->username(), request->pwd(), uid)) {
             response->set_code(100);
             response->set_message("account pwd not match");
             break;
         }
-        std::string token = CreateToken(request->username());
+        std::string token = CreateToken(uid);
         if (token.empty()) {
             response->set_code(-2);
             response->set_message("server error: createToken error");
             break;
         }
-        if (SetToken(request->username(), token)) {
+        if (SetToken(uid, token)) {
             response->set_code(0);
             response->set_message("ok");
             response->set_token(token);
+            response->set_uid(uid);
         } else {
             response->set_code(-3);
             response->set_message("token store server error");

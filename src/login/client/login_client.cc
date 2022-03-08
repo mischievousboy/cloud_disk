@@ -62,6 +62,7 @@ public:
         // Act upon its status.
         if (status.ok()) {
             std::cout << reply.token() << std::endl;
+            std::cout << reply.uid() << std::endl;
             return reply.message();
         } else {
             std::cout << status.error_code() << ": " << status.error_message()

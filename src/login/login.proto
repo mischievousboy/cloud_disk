@@ -21,4 +21,5 @@ message LoginReply {
   int32 code = 1;
   string message = 2;
   string token = 3;
+  string uid = 4;
 }
