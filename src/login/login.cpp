@@ -3,7 +3,6 @@
 #include <x2struct/x2struct.hpp>
 
 #include "redis_manager.h"
-#include "sw/redis++/redis++.h"
 #include <base64.h>
 #include <ctime>
 #include <database/database.h>
@@ -33,16 +32,14 @@ bool LoginServerImp::Check(const std::string &user, const std::string &pwd, std:
     return false;
 }
 
-bool LoginServerImp::SetToken(const std::string &user, const std::string &token) {
-    std::shared_ptr<sw::redis::Redis> redis = RedisManager::GetInstance()->GetRedisImpl();
-    if (!redis)
-        return false;
-    try{
-         return redis->set(TOKENKEY + user, token);
-    } catch (const sw::redis::Error& error){
-        LOGERROR << "redis error:"  << error.what();
-        return false;
-    }
+bool LoginServerImp::SetToken(const std::string &user, const std::string &token, int milliseconds , UpdateType type) {
+    const StringView &u1 = StringView(TOKENKEY + user);
+    const StringView &u2 = StringView(token);
+    const std::chrono::milliseconds &u3 = std::chrono::milliseconds(milliseconds);
+    auto ret = RedisManager::Exec(&sw::redis::Redis::set, "set", u1, u2, u3, static_cast<UpdateType>(type));
+    if(!ret.first)
+        LOGERROR << "function param:" << "user:" << u1.data() << "token:" << u2.data() << "milliseconds:" << milliseconds << "type:" << static_cast<int>(type);
+    return ret.first && ret.second;
 }
 
 std::string LoginServerImp::CreateToken(const std::string &user) {

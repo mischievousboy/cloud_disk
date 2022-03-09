@@ -4,9 +4,8 @@
 
 #include "redis_manager.h"
 
-#include <sw/redis++/redis++.h>
 
-using namespace sw::redis;
+std::shared_ptr<sw::redis::Redis> RedisManager::redis_;
 
 namespace {
     RedisManager *mgr_ = nullptr;
@@ -37,12 +36,6 @@ namespace {
     }
 }// namespace
 
-
-RedisManager *RedisManager::GetInstance() {
-    if (!mgr_)
-        mgr_ = new RedisManager();
-    return mgr_;
-}
 RedisManager::RedisManager() = default;
 
 std::shared_ptr<sw::redis::Redis> RedisManager::GetRedisImpl() {
