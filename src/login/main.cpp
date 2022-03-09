@@ -44,7 +44,7 @@ private:
 
         //连接redis
         reader = json_reader_->operator[]("redis");
-        RedisManager::GetInstance()->Init(reader);
+        RedisManager::Init(reader);
         return true;
     }
     Mylog::LogManager *log_mgr_ = nullptr;
