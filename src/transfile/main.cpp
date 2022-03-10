@@ -4,6 +4,7 @@
 #include "transfile.h"
 #include "log/mylog.h"
 #include "database/database.h"
+#include "redis_manager.h"
 
 class TransFileApp : public App {
 public:
@@ -23,18 +24,18 @@ private:
             log_mgr_->SetLogLevel(Mylog::Info);
         }
 
-        AddService<TranFileServiceImpl>("login");
+        AddService<TranFileServiceImpl>("transfile");
 
         //初始化数据库
-//        sql::DataBaseManager::CreateDataBase();
-//        x2struct::JsonReader reader = json_reader_->operator[]("mysql");
-//        sql::DataBaseManager::GetInstance()->Init(reader);
-//        if (!sql::DataBaseManager::GetInstance()->Open())
-//            return false;
+        sql::DataBaseManager::CreateDataBase();
+        x2struct::JsonReader reader = json_reader_->operator[]("mysql");
+        sql::DataBaseManager::GetInstance()->Init(reader);
+        if (!sql::DataBaseManager::GetInstance()->Open())
+            return false;
 
         //连接redis
-//        reader = json_reader_->operator[]("redis");
-//        RedisManager::GetInstance()->Init(reader);
+        reader = json_reader_->operator[]("redis");
+        RedisManager::Init(reader);
         return true;
     }
     Mylog::LogManager *log_mgr_ = nullptr;

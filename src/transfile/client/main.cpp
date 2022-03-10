@@ -50,6 +50,8 @@ public:
         cloudDisk::fileServer::MetaData metaData;
         chunk.mutable_metadata()->set_type("txt");
         chunk.mutable_metadata()->set_name(filename);
+        chunk.mutable_metadata()->set_uid("CD80000001");
+        chunk.mutable_metadata()->set_token("5012ac6eec0818b8f");
         writer->Write(chunk);
         while (!infile.eof()) {
             infile.read(data, CHUNK_SIZE);
@@ -69,6 +71,55 @@ public:
             std::cout << "TransferFile rpc failed." << std::endl;
         }
         return stats.message();
+    }
+
+    std::pair<std::string, std::string> GetFileInfo(const std::string &uid) {
+        cloudDisk::fileServer::GetFileInfoReq req;
+        cloudDisk::fileServer::GetFileInfoRsp rsp;
+        req.set_uid(uid);
+
+        ClientContext context;
+        grpc::Status status = stub_->GetFileInfo(&context, req, &rsp);
+        std::pair<std::string, std::string> res;
+        if (status.ok()) {
+            std::cout << rsp.code() << std::endl;
+            std::cout << rsp.message() << std::endl;
+            int size = rsp.fileinfo_size();
+            for (int i = 0; i < size; ++i) {
+                auto info = rsp.fileinfo(i);
+                std::cout << info.filename() << info.url() << std::endl;
+                if (i == 0) {
+                    res.first = info.filename();
+                    res.second = info.url();
+                }
+            }
+        }
+        return res;
+    }
+
+    void DownLoad(const std::string &url, const std::string &fileName) {
+        cloudDisk::fileServer::DownloadReq req;
+        cloudDisk::fileServer::DownloadRsp rsp;
+        ClientContext context;
+        std::ofstream out;
+
+        req.mutable_info()->set_url(url);
+        req.mutable_info()->set_filename(fileName);
+        std::unique_ptr<ClientReader<cloudDisk::fileServer::DownloadRsp>> read(stub_->Download(&context, req));
+        while (read->Read(&rsp)) {
+            if (rsp.has_base()) {
+                if (rsp.base().code() == 0) {
+                    out.open(fileName + ".down", std::ofstream::out | std::ofstream::trunc | std::ofstream::binary);
+                } else {
+                    std::cout << rsp.base().message() << std::endl;
+                    break;
+                }
+            } else if (out.is_open()){
+                out.write(rsp.context().buffer().c_str(),rsp.context().buffer().length());
+            }
+        }
+        if (out.is_open())
+            out.close();
     }
 
 private:
@@ -105,8 +156,9 @@ int main(int argc, char **argv) {
     TransFileClient greeter(
             grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
     std::string user("login.json");
-    std::string reply = greeter.SayHello(user);
-    std::cout << "Greeter received: " << reply << std::endl;
-
+    //std::string reply = greeter.SayHello(user);
+    //std::cout << "Greeter received: " << reply << std::endl;
+    auto res = greeter.GetFileInfo("CD80000001");
+    greeter.DownLoad(res.second, res.first);
     return 0;
 }

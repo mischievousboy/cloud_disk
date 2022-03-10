@@ -34,6 +34,9 @@ services:
     image: cloud-disk-envoy:latest
     networks:
       - cloud-disk
+    volumes:
+      - /data/envoy/data:/data
+      - /data/envoy/conf/front-envoy.yaml:/etc/front-envoy.yaml
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -59,5 +62,16 @@ services:
     image: cloud-disk-login:latest
     networks:
       - cloud-disk
+
+  file-server:
+    container_name: cloud-disk-file-server
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-app
+      target: FileServer
+    image: cloud-disk-file:latest
+    networks:
+      - cloud-disk
+
 networks:
   cloud-disk: {}

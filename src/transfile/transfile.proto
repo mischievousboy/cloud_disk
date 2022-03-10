@@ -2,18 +2,23 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "io.grpc.cloudDisk.transfile";
-option java_outer_classname = "transfilesProto";
+option java_outer_classname = "transfileProto";
 option objc_class_prefix = "TRF";
 
 package cloudDisk.fileServer;
 
 service TransFileService{
   rpc Upload(stream UploadReq) returns (UploadRsp){}
+  rpc Download(DownloadReq) returns (stream DownloadRsp){}
+  rpc GetFileInfo(GetFileInfoReq) returns (GetFileInfoRsp){}
 }
 
 message MetaData{
-  string name = 1;
-  string type = 2;
+  string token = 1;
+  string username = 2;
+  string uid = 3;
+  string name = 4; //文件名
+  string type = 5; //文件类型
 }
 
 message FileContext{
@@ -30,4 +35,38 @@ message UploadReq{
 message UploadRsp{
   int32 code = 1;
   string message = 2;
+}
+
+message FileInfo{
+  string filename = 1;
+  string url = 2;
+  string type = 3;
+}
+
+message GetFileInfoReq{
+  string username = 1;
+  string uid = 2;
+  string token = 3;
+}
+
+message GetFileInfoRsp{
+  int32 code = 1;
+  string message = 2;
+  repeated FileInfo fileinfo = 3;
+}
+
+message DownloadReq{
+  FileInfo info = 1;
+}
+
+message BaseRsp{
+  int32 code = 1;
+  string message = 2;
+}
+
+message DownloadRsp{
+  oneof rsp{
+    BaseRsp base = 1;
+    FileContext context = 2;
+  }
 }

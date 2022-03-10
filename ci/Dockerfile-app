@@ -27,3 +27,10 @@ ENV LD_LIBRARY_PATH=/app
 COPY --from=builder /opt/src/build/bin/register/* /app/
 COPY ./conf/register.json /app/
 CMD ["/app/register", "--config=/app/register.json"]
+
+
+FROM base AS FileServer
+ENV LD_LIBRARY_PATH=/app
+COPY --from=builder /opt/src/build/bin/transfile/* /app/
+COPY ./conf/transfile.json /app/
+CMD ["/app/transfile", "--config=/app/transfile.json"]
