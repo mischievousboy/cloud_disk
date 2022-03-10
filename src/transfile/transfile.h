@@ -11,11 +11,14 @@
 
 class TranFileServiceImpl : public cloudDisk::fileServer::TransFileService::Service {
 public:
-    ::grpc::Status Upload(::grpc::ServerContext* context, ::grpc::ServerReader< ::cloudDisk::fileServer::UploadReq>* reader, ::cloudDisk::fileServer::UploadRsp* response)override;
-
+    ::grpc::Status Upload(::grpc::ServerContext *context, ::grpc::ServerReader<::cloudDisk::fileServer::UploadReq> *reader, ::cloudDisk::fileServer::UploadRsp *response) override;
+    ::grpc::Status GetFileInfo(::grpc::ServerContext *context, const ::cloudDisk::fileServer::GetFileInfoReq *request, ::cloudDisk::fileServer::GetFileInfoRsp *response) override;
+    ::grpc::Status Download(::grpc::ServerContext* context, const ::cloudDisk::fileServer::DownloadReq* request, ::grpc::ServerWriter< ::cloudDisk::fileServer::DownloadRsp>* writer)override;
 private:
-    std::ofstream GetFileStream(const cloudDisk::fileServer::UploadReq& req);
-    void WriteFile(std::ofstream& out,const cloudDisk::fileServer::UploadReq& req);
+    std::ofstream GetFileStream(const std::string &filetype, const std::string &filename);
+    std::ifstream GetFileStream(const std::string &fileUrl);
+    void WriteFile(std::ofstream &out, const cloudDisk::fileServer::UploadReq &req);
+    bool StoreDB(const std::string &fileConvertName, const cloudDisk::fileServer::UploadReq &req);
 };
 
 
