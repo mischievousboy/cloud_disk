@@ -27,6 +27,8 @@ static_resources:
                           route: { cluster: loginService }
                         - match: { prefix: "/cloudDisk.fileServer" }
                           route: { cluster: fileService }
+                        - match: { prefix: "/static" }
+                          route: { cluster: downloadService }
                 http_filters:
                   - name: envoy.filters.http.router
 
@@ -87,3 +89,22 @@ static_resources:
                     socket_address:
                       address: file-server
                       port_value: 50051
+
+    - name: downloadService
+      connect_timeout: 1.25s
+      type: logical_dns
+      lb_policy: round_robin
+      dns_lookup_family: V4_ONLY
+      http_protocol_options: { }
+      upstream_connection_options:
+        tcp_keepalive:
+          keepalive_time: 300
+      load_assignment:
+        cluster_name: downloadService
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: file-nginx
+                      port_value: 80
