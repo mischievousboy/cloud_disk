@@ -88,5 +88,15 @@ services:
     volumes:
       - /data:/data
 
+  ext_authz-http-service:
+    container_name: cloud-disk-authz-http-server
+    build:
+      context: .
+      dockerfile: ./ci/Dockerfile-auth
+    image: cloud-disk-authz-http:latest
+    networks:
+      - cloud-disk
+
+
 networks:
   cloud-disk: {}
