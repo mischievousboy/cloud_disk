@@ -29,7 +29,7 @@ using cloudDisk::fileServer::UploadRsp;
 class TransFileClient {
 public:
     TransFileClient(std::shared_ptr<Channel> channel)
-        : stub_(fileImp ::NewStub(channel)) {}
+            : stub_(fileImp::NewStub(channel)) {}
 
     // Assembles the client's payload, sends it and presents the response back
     // from the server.
@@ -93,6 +93,9 @@ public:
                     res.second = info.url();
                 }
             }
+        } else {
+            std::cout << status.error_code() << std::endl;
+            std::cout << "TransferFile rpc failed." << std::endl;
         }
         return res;
     }
@@ -114,8 +117,8 @@ public:
                     std::cout << rsp.base().message() << std::endl;
                     break;
                 }
-            } else if (out.is_open()){
-                out.write(rsp.context().buffer().c_str(),rsp.context().buffer().length());
+            } else if (out.is_open()) {
+                out.write(rsp.context().buffer().c_str(), rsp.context().buffer().length());
             }
         }
         if (out.is_open())
@@ -123,7 +126,7 @@ public:
     }
 
 private:
-    std::unique_ptr<fileImp ::Stub> stub_;
+    std::unique_ptr<fileImp::Stub> stub_;
 };
 
 int main(int argc, char **argv) {
