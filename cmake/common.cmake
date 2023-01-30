@@ -17,10 +17,7 @@
 # See cmake_externalproject/CMakeLists.txt for all-in-one cmake build
 # that automatically builds all the dependencies before building route_guide.
 
-cmake_minimum_required(VERSION 3.5.1)
-
-set (CMAKE_CXX_STANDARD 11)
-
+set(CMAKE_INSTALL_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if(MSVC)
   add_definitions(-D_WIN32_WINNT=0x600)
 endif()
@@ -135,23 +132,23 @@ macro(gen_server TARGET LOCALSRCDIR)
   get_filename_component(${TARGET}_proto "./${TARGET}.proto" ABSOLUTE)
   get_filename_component(${TARGET}_proto_path "${${TARGET}_proto}" PATH)
 
-  set(${TARGET}_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.pb.cc")
-  set(${TARGET}_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.pb.h")
-  set(${TARGET}_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.grpc.pb.cc")
-  set(${TARGET}_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.grpc.pb.h")
+  set(${TARGET}_proto_srcs "${PROJECT_SOURCE_DIR}/${TARGET}.pb.cc")
+  set(${TARGET}_proto_hdrs "${PROJECT_SOURCE_DIR}/${TARGET}.pb.h")
+  set(${TARGET}_grpc_srcs "${PROJECT_SOURCE_DIR}/${TARGET}.grpc.pb.cc")
+  set(${TARGET}_grpc_hdrs "${PROJECT_SOURCE_DIR}/${TARGET}.grpc.pb.h")
 
   add_custom_command(
           OUTPUT "${${TARGET}_proto_srcs}" "${${TARGET}_proto_hdrs}" "${${TARGET}_grpc_srcs}" "${${TARGET}_grpc_hdrs}"
           COMMAND ${_PROTOBUF_PROTOC}
-          ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
-          --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
+          ARGS --grpc_out "${PROJECT_SOURCE_DIR}"
+          --cpp_out "${PROJECT_SOURCE_DIR}"
           -I "${${TARGET}_proto_path}"
           --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
           "${${TARGET}_proto}"
           DEPENDS "${${TARGET}_proto}")
 
   # Include generated *.pb.h files
-  include_directories(${CMAKE_CURRENT_BINARY_DIR})
+  include_directories(${PROJECT_SOURCE_DIR})
 
   add_library(${TARGET}_grpc_proto
           ${${TARGET}_grpc_srcs}
@@ -174,7 +171,7 @@ macro(gen_server TARGET LOCALSRCDIR)
           ${_PROTOBUF_LIBPROTOBUF}
           ${MYSQL_NAME}
           ${LOG4CPLUS_NAME})
-  install(TARGETS ${TARGET} DESTINATION bin/${TARGET})
+  install(TARGETS ${TARGET} DESTINATION ${CMAKE_INSTALL_OUTPUT_DIRECTORY}/${TARGET})
 endmacro()
 
 macro(gen_client SERVER TARGET)
@@ -190,5 +187,5 @@ macro(gen_client SERVER TARGET)
           ${_REFLECTION}
           ${_GRPC_GRPCPP}
           ${_PROTOBUF_LIBPROTOBUF})
-  install(TARGETS ${TARGET} DESTINATION bin/${SERVER})
+  install(TARGETS ${TARGET} DESTINATION ${CMAKE_INSTALL_OUTPUT_DIRECTORY}/${SERVER})
 endmacro()

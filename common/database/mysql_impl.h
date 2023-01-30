@@ -2,8 +2,8 @@
 #define _H_MYSQL_IMPL_H_
 
 #include "database.h"
+#include <mysql/mysql.h>
 
-struct MYSQL;
 
 namespace sql {
     class MysqlImpl : public DataBaseManager {
