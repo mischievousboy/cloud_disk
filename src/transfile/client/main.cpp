@@ -51,7 +51,7 @@ public:
         chunk.mutable_metadata()->set_type("txt");
         chunk.mutable_metadata()->set_name(filename);
         chunk.mutable_metadata()->set_uid("CD80000001");
-        chunk.mutable_metadata()->set_token("5012ac6eec0818b8f");
+        chunk.mutable_metadata()->set_token("c26480f947a96c61a");
         writer->Write(chunk);
         while (!infile.eof()) {
             infile.read(data, CHUNK_SIZE);

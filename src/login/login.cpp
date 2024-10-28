@@ -35,8 +35,9 @@ bool LoginServerImp::Check(const std::string &user, const std::string &pwd, std:
 bool LoginServerImp::SetToken(const std::string &user, const std::string &token, int milliseconds , UpdateType type) {
     const StringView &u1 = StringView(TOKENKEY + user);
     const StringView &u2 = StringView(token);
+    const std::string funcName("set");
     const std::chrono::milliseconds &u3 = std::chrono::milliseconds(milliseconds);
-    auto ret = RedisManager::Exec(&sw::redis::Redis::set, "set", u1, u2, u3, static_cast<UpdateType>(type));
+    auto ret = RedisManager::Exec(&sw::redis::Redis::set, funcName, u1, u2, u3, static_cast<UpdateType>(type));
     if(!ret.first)
         LOGERROR << "function param:" << "user:" << u1.data() << "token:" << u2.data() << "milliseconds:" << milliseconds << "type:" << static_cast<int>(type);
     return ret.first && ret.second;

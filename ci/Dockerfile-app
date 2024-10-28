@@ -12,7 +12,7 @@ WORKDIR /opt/src
 COPY .  .
 
 RUN set -ex;   \
-    cd /opt/src; mkdir build; cd build ; cmake ..; make ; cmake --install . --prefix . ; sh ../script/copy_so.sh ./bin
+    cd /opt/src; mkdir build; cd build ; cmake ..; make ; make install; sh ../script/copy_so.sh ./bin
 
 
 
